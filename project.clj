@@ -1,8 +1,8 @@
-(defproject wumpus-web "0.1.0-SNAPSHOT"
+(defproject wumpus-web "0.1.0"
   :description "Hunt The Wumpus On The Web"
   :url ""
 
-  :min-lein-version "2.7.1"
+  :min-lein-version "2.0.0"
 
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.229"]
@@ -15,7 +15,8 @@
                  [reagent-utils "0.2.1"]
                  [environ "1.1.0"]
                  [clj-time "0.13.0"]
-                 [cljs-ajax "0.5.8"]]
+                 [cljs-ajax "0.5.8"]
+                 [environ "1.1.0"]]
 
   :plugins [[lein-figwheel "0.5.9"]
             [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
@@ -25,6 +26,7 @@
   :ring {:handler wumpus-web.backend/app}
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/clj" "src/cljs"]
+  :uberjar-name "hunt-the-wumpus-standalone.jar"
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 
@@ -41,7 +43,7 @@
                            ;; started and complied your application.
                            ;; Comment this out once it no longer serves you.
                            ;; :open-urls ["http://localhost:3449/index.html"]
-}
+                           }
 
                 :compiler {:main                 wumpus-web.core
                            :asset-path           "js/compiled/out"
@@ -50,7 +52,7 @@
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
-                           :preloads             [devtools.preload dirac.runtime.preload]}}
+                           :preloads             [devtools.preload]}}
                ;; This next build is an compressed minified build for
                ;; production. You can build this with:
                ;; lein cljsbuild once min
@@ -95,7 +97,7 @@
 
              ;; to configure a different figwheel logfile path
              ;; :server-logfile "tmp/logs/figwheel-logfile.log"
-};; setting up nREPL for Figwheel and ClojureScript dev
+             };; setting up nREPL for Figwheel and ClojureScript dev
   ;; Please see:
   ;; https://github.com/bhauman/lein-figwheel/wiki/Using-the-Figwheel-REPL-within-NRepl
 
@@ -108,12 +110,14 @@
                    :source-paths ["src" "dev"]
                    ;; for CIDER
                    ;; :plugins [[cider/cider-nrepl "0.12.0"]]
-                   :repl-options {:nrepl-middleware [dirac.nrepl/middleware] ;; [cemerick.piggieback/wrap-cljs-repl]
-                                            }}
+                   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}}
 
-             :ubjerjar {:cljsbuild {:builds
-                                    [{:source-paths ["src/cljs"]
-                                      :compiler     {:optimizations :advanced
-                                                     :output-to     "resources/public/js/compiled/wumpus_web.js"
-                                                     :pretty-print  false}}]}
-                        :aot       :all}})
+             :uberjar {:cljsbuild   {:builds
+                                     [{:source-paths ["src/cljs"]
+                                       :compiler     {:optimizations :advanced
+                                                      :output-to     "resources/public/js/compiled/wumpus_web.js"
+                                                      :pretty-print  false}}]}
+                       :env         {:production true}
+                       :omit-source true
+                       :main        wumpus-web.backend
+                       :aot         :all}})

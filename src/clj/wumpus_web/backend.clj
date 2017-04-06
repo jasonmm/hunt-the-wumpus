@@ -1,4 +1,5 @@
 (ns wumpus-web.backend
+  (:gen-class)
   (:require [compojure.api.sweet :refer :all]
             [ring.adapter.jetty :refer :all]
             [ring.util.http-response :refer :all]
@@ -69,12 +70,12 @@
   [game]
   (let [room (:human-room game)]
     (or (->> {:wumpus (adjoining-rooms? room (:wumpus-room game))
-               :bats   (or (adjoining-rooms? room (:bat-room-1 game))
-                           (adjoining-rooms? room (:bat-room-2 game)))
-               :pit    (or (adjoining-rooms? room (:pit-room-1 game))
-                           (adjoining-rooms? room (:pit-room-2 game)))}
-              (filter (fn [[k v]] (true? v)))
-              keys)
+              :bats   (or (adjoining-rooms? room (:bat-room-1 game))
+                          (adjoining-rooms? room (:bat-room-2 game)))
+              :pit    (or (adjoining-rooms? room (:pit-room-1 game))
+                          (adjoining-rooms? room (:pit-room-2 game)))}
+             (filter (fn [[k v]] (true? v)))
+             keys)
         [])))
 
 (defn bat-move-human
@@ -233,5 +234,6 @@
       (wrap-not-modified)))
 
 (defn -main
-  [& args]
-  (run-jetty #'app {:port (Integer/parseInt (first args))}))
+  [& [port]]
+  (let [port (Integer. (or port (env :port) 3000))]
+    (run-jetty #'app {:port port :join? false})))
