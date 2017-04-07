@@ -8,7 +8,8 @@
             [ring.middleware.not-modified :refer :all]
             [ring.middleware.params :refer :all]
             [clj-time.core :as t]
-            [environ.core :refer [env]]))
+            [environ.core :refer [env]]
+            [clojure.java.io :as io]))
 
 ;; The number of seconds before a game is considered abandoned.
 (def game-ttl (or (:game-ttl env) 300))
@@ -216,6 +217,9 @@
   {:swagger {:ui   "/api/swagger"
              :spec "/swagger.json"
              :data {:info {:title "Hunt The Wumpus API"}}}}
+
+  (GET "/" [] (io/resource "public/index.html"))
+
   (context "/api/v1" []
     (GET "/new-game" []
       :summary "Create a new game."
