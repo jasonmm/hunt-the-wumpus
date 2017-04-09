@@ -20,6 +20,7 @@
 
   :plugins [[lein-figwheel "0.5.9"]
             [lein-cljsbuild "1.1.5" :exclusions [[org.clojure/clojure]]]
+            [lein-heroku "0.5.3"]
             [lein-ring "0.8.8"]]
 
   :main wumpus-web.backend
@@ -27,6 +28,8 @@
   :hooks [leiningen.cljsbuild]
   :source-paths ["src/clj" "src/cljs"]
   :uberjar-name "hunt-the-wumpus-standalone.jar"
+  :heroku {:app-name "hunt-the-wumpus"
+           :include-files ["target/hunt-the-wumpus-standalone.jar"]}
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
 

@@ -1,18 +1,27 @@
+image: clojure:lein-2.7.1
+
 before_script:
-    - wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
-    - chmod a+x lein
-    - export LEIN_ROOT=1
-    - PATH=$PATH:.
     - lein deps
 
 stages:
-    - build
+    # - build
+    - deploy
 
-build:
-    stage: build
-    script:
-        - lein uberjar
-    artifacts:
-        paths:
-            - target/hunt-the-wumpus-standalone.jar
+# build:
+#     stage: build
+#     script:
+#         - lein uberjar
+#     artifacts:
+#         paths:
+#             - target/hunt-the-wumpus-standalone.jar
 
+production:
+  stage: deploy
+  script:
+    - lein uberjar
+    - HEROKU_API_KEY=$HEROKU_PRODUCTION_API_KEY lein heroku deploy
+  artifacts:
+    paths:
+      - target/hunt-the-wumpus-standalone.jar
+  only:
+    - master
